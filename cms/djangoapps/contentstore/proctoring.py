@@ -39,7 +39,10 @@ def register_special_exams(course_key):
         # if feature is not enabled then do a quick exit
         return
 
-    course = modulestore().get_course(course_key)
+    try:
+        course = modulestore().get_course(course_key)
+    except ItemNotFoundError:
+        return
     if not course.enable_proctored_exams and not course.enable_timed_exams:
         # likewise if course does not have these features turned on
         # then quickly exit
