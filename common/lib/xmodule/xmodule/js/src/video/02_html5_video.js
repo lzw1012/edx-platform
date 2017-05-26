@@ -212,12 +212,14 @@ function(_) {
             this.playerState = HTML5Video.PlayerState.PAUSED;
             if ($.isFunction(this.config.events.onReady)) {
                 this.config.events.onReady(null);
+                this.el.find('.video-wrapper .btn-play').removeClass('is-hidden');
             }
         };
 
         Player.prototype.onPlay = function() {
             this.playerState = HTML5Video.PlayerState.BUFFERING;
             this.callStateChangeCallback();
+            this.el.find('.video-wrapper .btn-play').addClass('is-hidden');
         };
 
         Player.prototype.onPlaying = function() {
@@ -228,6 +230,7 @@ function(_) {
         Player.prototype.onPause = function() {
             this.playerState = HTML5Video.PlayerState.PAUSED;
             this.callStateChangeCallback();
+            this.el.find('.video-wrapper .btn-play').removeClass('is-hidden');
         };
 
         Player.prototype.onEnded = function() {
@@ -244,7 +247,7 @@ function(_) {
                     'durationchange', 'volumechange'
                 ],
                 self = this,
-                errorMessage;
+                callback;
 
             this.config = config;
             this.logs = [];
@@ -265,7 +268,7 @@ function(_) {
 
             // Attach a 'click' event on the <video> element. It will cause the
             // video to pause/play.
-            this.videoEl.on('click', function() {
+            callback = function() {
                 var PlayerState = HTML5Video.PlayerState;
 
                 if (self.playerState === PlayerState.PLAYING) {
@@ -275,7 +278,9 @@ function(_) {
                     self.playerState = PlayerState.PLAYING;
                     self.playVideo();
                 }
-            });
+            };
+            this.videoEl.on('click', callback);
+            this.el.find('.video-wrapper .btn-play').on('click', callback);
 
             this.debug = false;
             $.each(events, function(index, eventName) {
