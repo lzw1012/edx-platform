@@ -1,4 +1,5 @@
 """Utilities to assist with commerce tasks."""
+from urllib import urlencode
 from urlparse import urljoin
 
 from django.conf import settings
@@ -76,11 +77,8 @@ class EcommerceService(object):
         """
         return self.get_absolute_ecommerce_url(self.config.single_course_checkout_page)
 
-    def checkout_page_url(self, skus):
+    def checkout_page_url(self, *args):
         """ Construct the URL to the ecommerce checkout page and include products.
-
-        Args:
-            skus (list): List of product SKUs
 
         Returns:
             Absolute path to the ecommerce checkout page showing basket that contains specified products.
@@ -90,5 +88,5 @@ class EcommerceService(object):
         """
         return '{checkout_page_path}?{skus}'.format(
             checkout_page_path=self.get_absolute_ecommerce_url(self.config.single_course_checkout_page),
-            skus='&'.join('sku={sku}'.format(sku=sku) for sku in skus),
+            skus=urlencode({'sku': args}, doseq=True),
         )

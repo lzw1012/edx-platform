@@ -98,5 +98,5 @@ class EcommerceServiceTests(TestCase):
     @ddt.unpack
     def test_checkout_page_url(self, skus, expected_url):
         """ Verify the checkout page URL is properly constructed and returned. """
-        url = EcommerceService().checkout_page_url(skus)
+        url = EcommerceService().checkout_page_url(*skus)
         self.assertEqual(url, expected_url)

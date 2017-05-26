@@ -428,7 +428,7 @@ class ProgramDataExtender(object):
             ecommerce = EcommerceService()
             sku = getattr(required_mode, 'sku', None)
             if ecommerce.is_enabled(self.user) and sku:
-                run_mode['upgrade_url'] = ecommerce.checkout_page_url([required_mode.sku])
+                run_mode['upgrade_url'] = ecommerce.checkout_page_url(required_mode.sku)
             else:
                 run_mode['upgrade_url'] = None
         else:
@@ -502,21 +502,19 @@ class ProgramMarketingDataExtender(ProgramDataExtender):
         self.data['number_of_courses'] = 0
         self.data['full_program_price'] = 0
 
+        ecommerce_service = EcommerceService()
+
     def _extend_program(self):
         """Aggregates data from the program data structure."""
         cache_key = 'program.instructors.{uuid}'.format(
             uuid=self.data['uuid']
         )
         program_instructors = cache.get(cache_key)
-        ecommerce_service = EcommerceService()
         is_learner_eligible_for_one_click_purchase = self.data['is_program_eligible_for_one_click_purchase']
         skus = []
         applicable_seat_types = self.data['applicable_seat_types']
 
         for course in self.data['courses']:
-            for seat in course['course_runs'][0]['seats']:
-                if seat['type'] in applicable_seat_types:
-                    skus.append(seat['sku'])
             self._execute('_collect_course', course)
             if not program_instructors:
                 for course_run in course['course_runs']:
@@ -526,13 +524,19 @@ class ProgramMarketingDataExtender(ProgramDataExtender):
                     course_run['is_enrolled'] for course_run in course['course_runs']
                 )
 
+                if is_learner_eligible_for_one_click_purchase:
+                    for course_run in course['course_runs']:
+                        for seat in course_run['seats']:
+                            if seat['type'] in applicable_seat_types:
+                                skus.append(seat['sku'])
+
         if not program_instructors:
             # We cache the program instructors list to avoid repeated modulestore queries
             program_instructors = self.instructors.values()
             cache.set(cache_key, program_instructors, 3600)
 
         self.data.update({
-            'basket_page_url': ecommerce_service.checkout_page_url(skus),
+            'basket_page_url': ecommerce_service.checkout_page_url(*skus) if skus else '#courses',
             'instructors': program_instructors,
             'is_learner_eligible_for_one_click_purchase': is_learner_eligible_for_one_click_purchase,
         })

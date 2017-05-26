@@ -716,9 +716,9 @@ def course_about(request, course_id):
             professional_mode = modes.get(CourseMode.PROFESSIONAL, '') or \
                 modes.get(CourseMode.NO_ID_PROFESSIONAL_MODE, '')
             if professional_mode.sku:
-                ecommerce_checkout_link = ecomm_service.checkout_page_url([professional_mode.sku])
+                ecommerce_checkout_link = ecomm_service.checkout_page_url(professional_mode.sku)
             if professional_mode.bulk_sku:
-                ecommerce_bulk_checkout_link = ecomm_service.checkout_page_url([professional_mode.bulk_sku])
+                ecommerce_bulk_checkout_link = ecomm_service.checkout_page_url(professional_mode.bulk_sku)
 
         # Find the minimum price for the course across all course modes
         registration_price = CourseMode.min_course_price_for_currency(
