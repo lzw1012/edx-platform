@@ -9,8 +9,8 @@ from common.test.acceptance.tests.helpers import (
     get_modal_alert,
 )
 from nose.plugins.attrib import attr
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc, CourseUpdateDesc
 from common.test.acceptance.fixtures.certificates import CertificateConfigFixture
+from common.test.acceptance.fixtures.course import CourseFixture, CourseUpdateDesc, XBlockFixtureDesc
 from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.lms.certificate_page import CertificatePage
 from common.test.acceptance.pages.lms.course_home import CourseHomePage
